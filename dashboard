@@ -51,9 +51,11 @@ case "$1" in
 		dashboard start
 		;;
 	help)
-		echo start
-		echo kill
-		echo restart
+		echo "help (this message)"
+		echo "start (creates the tmux-panes and ssh->htop)"
+		echo "kill (Make it go away)"
+		echo "restart (dashboard kill && dashboard start)"
+		echo "push-htop-config (makes setup easy of htop on each node)"
 		;;
 	push-htop-config)
 		echo "This will replace the htop config on all nodes."
@@ -89,3 +91,12 @@ right_meter_modes=2 2' > ~/.config/htop/htoprc"
 		fi
 		;;
 esac
+		echo "huh... this program doesn't know that argument, maybe try one from below..."
+		echo
+                echo "help (this message)"
+                echo "start (creates the tmux-panes and ssh->htop)"
+                echo "kill (Make it go away)"
+                echo "restart (dashboard kill && dashboard start)"
+                echo "push-htop-config (makes setup easy of htop on each node)"
+
+exit 0
