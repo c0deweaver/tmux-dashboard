@@ -1,28 +1,31 @@
 ### A simple dashboard in tmux to see CPU+Mem usage from multiple boxes from 1
 
 #### Pre-reqs:
-	- tmux  
-	- htop  
-	- sshd setup on clients  
-	- ssh key based authentication for aforementioned clients  
-	
+	- tmux
+	- htop
+	- sshd setup on clients
+	- ssh key based authentication for aforementioned clients
+		- I also recomend adding this to you .ssh/config 'Host *\n\tConnectTimeout 1' because I hate waiting for offline hosts
 	
 #### Install:  
-	- git clone https://github.com/c0deweaver/tmux-dashboard.git  
-	- cd tmux-dashboard  
-	- sudo cp dashboard /usr/local/bin  
-	- export $PATH=$PATH:/usr/local/bin  
+	- git clone https://github.com/c0deweaver/tmux-dashboard.git
+	- cd tmux-dashboard
+	- home-dash.sh
+		- Further runs can be started anywhere with home-dash
 
+#### Config:
+	- hosts: hosts to connect and create panes/windows for
+	- panes: how to resize panes 
+	- launch: run one off commands at launch like what I use to create initial layouts and send commands to those panes in the layouts
 
-#### Configure:  
-	- Add hostnames/ips to ~.dashboard with each node as its own line.  
-	- dashboard push-htop-config #This will itterate through each node setting the htoprc file.  
-	- if you don't have ssh-keys shared you will have to enter the password for each node.  
-	
-#### Arguments:  
-	- help (needs updated, I know)  
-	- start (creates the tmux-panes and ssh->htop)  
-	- kill (Make it go away)  
-	- fix (to reset the sizing)  
-	- restart (dashboard kill && dashboard start)  
-	- push-htop-config (makes setup easy of htop on each node)  
+#### Hosts file:
+	- Pane:Win:Order:Name:Host
+	- 0/1:0/1:{1..}:PrettyName:dns/ip extra args here
+
+#### Launch file:
+  - commands to run when you launch the dashboard
+	- I fill mine with ```tmux split-pane -t SomeWin.X```
+	- That lets me build layouts I want each time
+
+#### Panes file:
+  - Window name/num,pane#,height
