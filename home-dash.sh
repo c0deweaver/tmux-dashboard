@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-#window=$1
 export thisBin="$(realpath $0 )"
 export whereAmI="$(dirname "$thisBin")"
 export bin_dir="$(echo $PATH | sed -e "s/\:/\n/g" | grep -e '^/usr.*/bin$' | head -n1 )"
@@ -60,24 +59,20 @@ if [ -f $whereAmI/launch ]; then \
   bash $whereAmI/launch
   echo '[DONE] Launch of $whereAmI/lauch'
 fi
-
 hostCount=$(echo "$hosts" |cut -f1 -d\:|grep -e'1'|wc -l )
 maxPane=$(($hostCount+1))
 tmux select-pane -t "Dash.$maxPane"
-
 tmux select-window -t Dash
 tmux select-pane -t "Dash.$(tmux list-pane | tail -n1 | cut -f1 -d\:)"
-
 paneConfig="$whereAmI/panes"
 interval=5
 wait
 while :; do \
-    for i in $(cat $paneConfig | grep -ve "^#" ); do \
-        windowName=$(echo $i | cut -f1 -d, )
-	windowNum=$(tmux list-windows | grep -i " $windowName#" | cut -f1 -d:)
-        paneNum=$(echo $i | cut -f2 -d, )
-        paneHeight=$(echo $i | cut -f3 -d, )
-        tmux resize-pane -t $windowNum.$paneNum -y $paneHeight
-    done
- sleep $interval
- done
+  grep -ve '^#' $paneConfig | while IFS=',' read -r name pane height; do \
+    tmux resize-pane -t $name.$pane -y "$height"; 
+    echo tmux resize-pane -t $name.$pane -y "$height"; 
+  done; 
+  read -t$interval ; 
+done
+
+
