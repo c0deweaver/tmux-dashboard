@@ -15,7 +15,7 @@ function config() {
     exit 1
   fi
   if [[ ! -z dashName ]]; then
-    dashName="dash"
+    dashName="NewDash"
   fi
   window=$(tmux display-message -p '#I')
   hostCount=$(echo "$hosts" |cut -f1 -d\:|grep -e'1'|wc -l )
@@ -25,7 +25,7 @@ function config() {
 function windowCreator() {
   echo creating windows
   tmux rename-session "$dashName"
-  if [[ -z $hosts ]]; then echo "Hosts:"; echo "$hosts";exit 1;fi
+  if [[ -z $hosts ]]; then echo "Hosts:"; echo "$hosts";fi
   echo "$hosts" | while IFS=':' read -r enablePane enableWin enableExt name host
   do 
   if [ "$enableWin" == "1" ]; then 
@@ -75,12 +75,12 @@ function paneManager() {
     grep -ve '^#' $paneConfig | while IFS=',' read -r name pane height; do 
       tmux resize-pane -t $name.$pane -y "$height"; 
     done; 
-    read -t "$paneManagerInterval" ; 
+    read -t $paneManagerInterval -p "Waiting for $paneManagerInterval" ; 
   done
 }
 
-function argParse() {
-  while getopts '*' opt; do
+#function argParse() {
+  while getopts 'i:pm:l:pc:wc' opt; do
     case "$opt" in
       i)
         arg="$OPTARG"
@@ -103,13 +103,16 @@ function argParse() {
         window_creator=true
         #-wc disables window creator
         ;;
-      ?|h)
+      #*)
+      #  echo noargs
+      #  ;;
+      *)
         echo "Usage: ... on my todo list... good luck."
-        exit 1
+        #exit 1
         ;;
     esac
   done
-}
+#}
 
 
 #################################
@@ -119,17 +122,14 @@ function argParse() {
 unset paneManagerInterval pane_manager launcher pane_creator window_creator
 #argParse
 config
-if [[ ! -z $pane_creator ]]; then echo "running paneCreator"; paneCreator; fi
-if [[ ! -z $window_creator ]]; then echo "running windowCreator"; windowCreator; fi
-if [[ ! -z $launcher ]]; then echo "running launchScript"; launchScript; fi
-if [[ ! -z $paneManagerInterval ]]; then echo "setting paneManagerInterval"; paneManagerInterval=5; fi 
+paneCreator
+#if [[ ! -n $pane_creator ]]; then echo "running paneCreator"; paneCreator; fi
+if [[ ! -n $window_creator ]]; then echo "running windowCreator"; windowCreator; fi
+if [[ ! -n $launcher ]]; then echo "running launchScript"; launchScript; fi
+if [[ ! -n $paneManagerInterval ]]; then echo "setting paneManagerInterval"; paneManagerInterval=5; fi 
     #if an interval is not set it defaults to 5s
     #paneManager runs in a loop so must be run last, it is interfaced with at Dash.0
-if [[ ! -z $pane_manager ]]; then echo "running paneManager"; paneManager; fi
-windowCreator
-paneCreator
-launchScript
-paneManager
+if [[ ! -n $pane_manager ]]; then echo "running paneManager"; paneManager; fi
 
 
 
